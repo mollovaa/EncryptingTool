@@ -1,4 +1,4 @@
-package caesar
+package ceaser
 
 const lowerCaseAlphabet = "abcdefghijklmnopqrstuvwxyz"
 const upperCaseAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"

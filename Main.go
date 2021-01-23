@@ -195,11 +195,11 @@ func main() {
 
 		cipher := defineCipherChoice(scanner)
 
-		fmt.Println("\nCipher chosen:", ciphers[cipher], "\n")
+		fmt.Println("\nCipher chosen:", ciphers[cipher])
 
 		operation := validateOperationChoice(scanner)
 
-		fmt.Println("\nOperation chosen:", operation, "\n")
+		fmt.Println("\nOperation chosen:", operation)
 
 		var result string
 		switch operation {
@@ -210,7 +210,7 @@ func main() {
 			result = callCipherDecryption(cipher, scanner)
 			break
 		}
-		fmt.Println("Result:", result, "\n")
+		fmt.Println("Result:", result)
 
 		fmt.Println("Do you want to continue? Choose Y for Yes and anything else for No.")
 		scanner.Scan()
