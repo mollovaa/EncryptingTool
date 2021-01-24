@@ -1,8 +1,17 @@
+/*
+	Transposition package contains implementations of 
+	encryption and decryption processes with transposition cipher.
+	To encrypt or decrypt a key is needed. 
+	The key is a number - no matter positive or negative, because its absolute value is used.
+*/
 package transposition
 
 import "strings"
 import "math"
 
+// Given are the plain text and the key.
+// The plain text is written in diagonals in a zig-zag manner to the selected depth (the key).
+// To obtain the cipher text, the diagonals are read row-by-row.
 func Encrypt(plaintext string, key int) string {
 	key = int(math.Abs(float64(key)))
 
@@ -15,6 +24,9 @@ func Encrypt(plaintext string, key int) string {
 	return strings.Join(ciphertext, "")
 }
 
+// Given are the cipher text and the key. 
+// The cipher text is written in a zig-zag manner to the selected depth (the key).
+// To obtain the plain text, the diagonals are read as diagonals (column-by-column).
 func Decrypt(ciphertext string, key int) string {
 	key = int(math.Abs(float64(key)))
 

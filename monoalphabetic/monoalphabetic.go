@@ -1,3 +1,10 @@
+/*
+	Monoalphabetic package contains implementations of 
+	encryption and decryption processes with monoalphabetic cipher.
+	To encrypt or decrypt a key is needed. 
+	The key is a text - only letters, no special symbols or digits.
+	The operatons are done with capital letters only.
+*/
 package monoalphabetic
 
 import "strings"
@@ -5,6 +12,12 @@ import "strings"
 const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 const alphabetReversed = "ZYXWVUTSRQPONMLKJIHGFEDCBA"
 
+// Given are the plain text and the key.
+// Duplicated letters are removed from the key 
+// and the letters from the alphabet which are not present, 
+// are appended to the key in reversed order (cipher pad). 
+// The cipher text is structured using the cipher pad, 
+// the letters corresponding to the plaintext's letter position, are the relevant ones.
 func Encrypt(plaintext string, key string) string {
 	cipherPad := makeCipher(key)
 	encrypted := ""
@@ -18,6 +31,9 @@ func Encrypt(plaintext string, key string) string {
 	return encrypted
 }
 
+// Given are the cipher text and the key.
+// The cipher pad is created based on the key and the plain text,
+// letters are taken from the alphabet based on the position of the cipher text letters in the cipher pad.
 func Decrypt(ciphertext string, key string) string {
 	cipherPad := makeCipher(key)
 	decrypted := ""

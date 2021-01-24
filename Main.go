@@ -1,3 +1,7 @@
+/*
+	Main package:
+	contains the console app logic: use choices, input and output.
+*/
 package main
 
 import (
@@ -14,6 +18,7 @@ import (
 	"unicode"
 )
 
+// Map ciphers stores all available ciphers
 var ciphers = map[int]string{
 	1: "Ceaser",
 	2: "Route",
@@ -21,6 +26,7 @@ var ciphers = map[int]string{
 	4: "Monoalphabetic",
 	5: "One-time pad"}
 
+// Custom type OperationEnum with 2 options: Encrypt, Decrypt
 type OperationEnum int
 
 const (
@@ -28,6 +34,7 @@ const (
 	Decrypt OperationEnum = 2
 )
 
+// stringify function of the OperationEnum
 func (e OperationEnum) String() string {
 	switch e {
 	case Encrypt:
@@ -39,6 +46,7 @@ func (e OperationEnum) String() string {
 	}
 }
 
+// Function which prints all available ciphers with their corresponding keys in the map
 func printAvailableCiphers() {
 	var keys []int
 	for key, _ := range ciphers {
@@ -52,6 +60,9 @@ func printAvailableCiphers() {
 	}
 }
 
+// Reads input from the console.
+// Validates if the input is a corresponding number to a cipher.
+// If yes, the number is returned, else error is thrown.
 func defineCipherChoice(scanner *bufio.Scanner) int {
 	fmt.Println("Choose the cipher you want to use by its corresponding number.")
 	for {
@@ -65,6 +76,9 @@ func defineCipherChoice(scanner *bufio.Scanner) int {
 	}
 }
 
+// Reads input from the console.
+// Validates if the input is a number.
+// If yes, the number, used later for cipher key, is returned, else error is thrown.
 func defineNumberCipherKey(scanner *bufio.Scanner) int {
 	fmt.Println("Enter the key used for encryption. It should be a number:")
 	for {
@@ -78,6 +92,9 @@ func defineNumberCipherKey(scanner *bufio.Scanner) int {
 	}
 }
 
+// Reads input from the console.
+// Validates if the input is a number corresponding to a operarion.
+// If yes, the operationEnum is returned, else error is thrown.
 func validateOperationChoice(scanner *bufio.Scanner) OperationEnum {
 	fmt.Println("Press 1 for encryption and 2 for decryption.")
 	for {
@@ -96,6 +113,7 @@ func validateOperationChoice(scanner *bufio.Scanner) OperationEnum {
 	}
 }
 
+// Stores statistics about which cipher is the most used.
 var statistics = map[string]int{
 	"Ceaser":         0,
 	"Route":          0,
@@ -103,6 +121,9 @@ var statistics = map[string]int{
 	"Monoalphabetic": 0,
 	"One-time pad":   0}
 
+// Depending on the cipher used, 
+// the cipher encryption of input plain text is called.
+// The result is the cipher text.
 func callCipherEncryption(cipherKey int, scanner *bufio.Scanner) string {
 	fmt.Println("Enter plain text to encypt:")
 	scanner.Scan()
@@ -134,6 +155,9 @@ func callCipherEncryption(cipherKey int, scanner *bufio.Scanner) string {
 	}
 }
 
+// Reads input from the console.
+// Validates if the input is text only.
+// If yes, the text, used later for cipher key, is returned, else error is thrown.
 func defineTextCipherKey(scanner *bufio.Scanner) string {
 	fmt.Println("Enter the key used for encryption. It should be letters only.")
 	for {
@@ -155,6 +179,9 @@ func defineTextCipherKey(scanner *bufio.Scanner) string {
 	}
 }
 
+// Depending on the cipher used, 
+// the cipher decryption of input cipher text is called.
+// The result is the plain text.
 func callCipherDecryption(cipherKey int, scanner *bufio.Scanner) string {
 	fmt.Println("Enter cipher text to decrypt:")
 	scanner.Scan()

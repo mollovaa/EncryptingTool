@@ -1,7 +1,20 @@
+/*
+	Route package contains implementations of 
+	encryption and decryption processes with route cipher.
+	To encrypt or decrypt a key is needed. 
+	The key is a number - might be positive or negative.
+*/
 package route
 
 import "math"
 
+// Given are the plain text and the key.
+// The plain text is written in a grid with number of columns = key.
+// If some empty cells are left, they are filled with "X", so that a rectangle is formed.
+// Next, the letters from the grid are combined following certain route:
+// - if the key is a positive number, then the route starts from top left corner and it goes downwards and inwards.
+// - if the key is a negative number, then the route starts from the bottom right corner and it goes upwards and inwards.
+// The letters in the defined route form the cipher text.
 func Encrypt(plaintext string, key int) string {
 	columns := int(math.Abs(float64(key)))
 	
@@ -20,6 +33,12 @@ func Encrypt(plaintext string, key int) string {
 	return createCipherTextByNegativeSpiral(grid)
 }
 
+// Given are the cipher text and the key.
+// An empty grid is created considering thatthe key is the column number 
+// and the row number is the lenght of the cipher text divided by the key.
+// Then following the route (defined by the sign of the key), 
+// the letters from the cipher text are placed at the empty grid. 
+// The plain text is the obtained text from the created grid.
 func Decrypt(ciphertext string, key int) string {
 
 	columns := int(math.Abs(float64(key)))
