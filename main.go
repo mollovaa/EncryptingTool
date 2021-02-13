@@ -5,12 +5,12 @@
 package main
 
 import (
-	ceaser "./ceaser"
-	encrypting "./encrypting"
-	monoalphabetic "./monoalphabetic"
-	onetimepad "./onetimepad"
-	route "./route"
-	transposition "./transposition"
+	"ceaser"
+	"encrypting"
+	"monoalphabetic"
+	"onetimepad"
+	"route"
+	"transposition"
 	"bufio"
 	"fmt"
 	"os"

@@ -1,7 +1,7 @@
 package encrypting
 
 import "testing"
-import ceaser "../ceaser"
+import "ceaser"
 
 func TestDefineCipherChoiceKeyIsValid(t *testing.T) {
 	ceaserCipher := &ceaser.Ceaser{}
