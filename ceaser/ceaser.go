@@ -14,8 +14,8 @@ type Ceaser struct {
 	TimesUsed int
 }
 
-const lowerCaseAlphabet = "abcdefghijklmnopqrstuvwxyz"
-const upperCaseAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+const allAsciiCharacters = "!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz"
+const size = len(allAsciiCharacters)
 
 // Given are the plain text and the key.
 // Each letter of the plain text is shifted "key" position to left or right
@@ -51,18 +51,13 @@ func (c *Ceaser) IncreaseTimesUsed() {
 }
 
 func rotateText(inputText string, key int) string {
-	// If the key is > 26, its = key % 26.
-	key %= 26
+	// If the key is > 90, its = key % 90.
+	key %= size
 	rotatedText := []byte(inputText)
 
 	for index, byteValue := range rotatedText {
-		if byteValue >= 'a' && byteValue <= 'z' {
-			shiftedIdx := (int((26 + (byteValue - 'a'))) + key) % 26
-			rotatedText[index] = lowerCaseAlphabet[shiftedIdx]
-		} else if byteValue >= 'A' && byteValue <= 'Z' {
-			shiftedIdx := (int((26 + (byteValue - 'A'))) + key) % 26
-			rotatedText[index] = upperCaseAlphabet[shiftedIdx]
-		}
+			shiftedIdx := (int((size + int(byteValue - '!'))) + key) % size
+			rotatedText[index] = allAsciiCharacters[shiftedIdx]
 	}
 	return string(rotatedText)
 }

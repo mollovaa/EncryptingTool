@@ -13,7 +13,7 @@ func TestEncryptWithPositiveKey(t *testing.T) {
 func TestEncryptWithNegativeKey(t *testing.T) {
 	c := &Ceaser{}
 	result := c.Encrypt("Welcome", "-3")
-	if result != "Tbizljb" {
+	if result != "Tbi`ljb" {
 		t.Errorf("Encryption is incorrect, got %s, wanted %s", result, "Tbizljb")
 	}
 }
@@ -28,7 +28,7 @@ func TestDecryptWithPositiveKey(t *testing.T) {
 
 func TestDecryptWithNegativeKey(t *testing.T) {
 	c := &Ceaser{}
-	result := c.Decrypt("Tbizljb", "-3")
+	result := c.Decrypt("Tbi`ljb", "-3")
 	if result != "Welcome" {
 		t.Errorf("Decryption is incorrect, got %s, wanted %s", result, "Welcome")
 	}
