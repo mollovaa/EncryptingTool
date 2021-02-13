@@ -1,12 +1,18 @@
 /*
-	Route package contains implementations of 
+	Route package contains implementations of
 	encryption and decryption processes with route cipher.
-	To encrypt or decrypt a key is needed. 
+	To encrypt or decrypt a key is needed.
 	The key is a number - might be positive or negative.
 */
 package route
 
 import "math"
+import "strconv"
+import "fmt"
+
+type Route struct {
+	TimesUsed int
+}
 
 // Given are the plain text and the key.
 // The plain text is written in a grid with number of columns = key.
@@ -15,9 +21,10 @@ import "math"
 // - if the key is a positive number, then the route starts from top left corner and it goes downwards and inwards.
 // - if the key is a negative number, then the route starts from the bottom right corner and it goes upwards and inwards.
 // The letters in the defined route form the cipher text.
-func Encrypt(plaintext string, key int) string {
-	columns := int(math.Abs(float64(key)))
-	
+func (r *Route) Encrypt(plaintext string, key string) string {
+	i, _ := strconv.Atoi(key)
+	columns := int(math.Abs(float64(i)))
+
 	var rows int
 	if len(plaintext)%columns == 0 {
 		rows = len(plaintext) / columns
@@ -27,26 +34,26 @@ func Encrypt(plaintext string, key int) string {
 
 	grid := createGrid(plaintext, rows, columns)
 
-	if key >= 0 {
+	if i >= 0 {
 		return createCipherTextByPositiveSpiral(grid)
 	}
 	return createCipherTextByNegativeSpiral(grid)
 }
 
 // Given are the cipher text and the key.
-// An empty grid is created considering thatthe key is the column number 
+// An empty grid is created considering thatthe key is the column number
 // and the row number is the lenght of the cipher text divided by the key.
-// Then following the route (defined by the sign of the key), 
-// the letters from the cipher text are placed at the empty grid. 
+// Then following the route (defined by the sign of the key),
+// the letters from the cipher text are placed at the empty grid.
 // The plain text is the obtained text from the created grid.
-func Decrypt(ciphertext string, key int) string {
-
-	columns := int(math.Abs(float64(key)))
+func (r *Route) Decrypt(ciphertext string, key string) string {
+	i, _ := strconv.Atoi(key)
+	columns := int(math.Abs(float64(i)))
 	rows := len(ciphertext) / columns
 
 	grid := createEmptyGrid(rows, columns)
 
-	if key >= 0 {
+	if i >= 0 {
 		fillEmptyGridByPositiveSpiral(grid, ciphertext)
 	} else {
 		fillEmptyGridByNegativeSpiral(grid, ciphertext)
@@ -59,6 +66,22 @@ func Decrypt(ciphertext string, key int) string {
 	}
 	return plaintext
 
+}
+
+func (r *Route) String() string {
+	return fmt.Sprintf("Name: Route, used %d times.", r.TimesUsed)
+}
+
+func (r *Route) Name() string {
+	return "Route"
+}
+
+func (r *Route) GetTimesUsed() int {
+	return r.TimesUsed
+}
+
+func (r *Route) IncreaseTimesUsed() {
+	r.TimesUsed = r.TimesUsed + 1
 }
 
 func createGrid(plaintext string, rows int, columns int) []string {

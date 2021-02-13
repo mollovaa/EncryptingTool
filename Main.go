@@ -6,6 +6,7 @@ package main
 
 import (
 	ceaser "./ceaser"
+	encrypting "./encrypting"
 	monoalphabetic "./monoalphabetic"
 	onetimepad "./onetimepad"
 	route "./route"
@@ -13,68 +14,9 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"sort"
 	"strconv"
 	"unicode"
 )
-
-// Map ciphers stores all available ciphers
-var ciphers = map[int]string{
-	1: "Ceaser",
-	2: "Route",
-	3: "Transposition",
-	4: "Monoalphabetic",
-	5: "One-time pad"}
-
-// Custom type OperationEnum with 2 options: Encrypt, Decrypt
-type OperationEnum int
-
-const (
-	Encrypt OperationEnum = 1
-	Decrypt OperationEnum = 2
-)
-
-// stringify function of the OperationEnum
-func (e OperationEnum) String() string {
-	switch e {
-	case Encrypt:
-		return "Encryption"
-	case Decrypt:
-		return "Decryption"
-	default:
-		return "InvalidOperation"
-	}
-}
-
-// Function which prints all available ciphers with their corresponding keys in the map
-func printAvailableCiphers() {
-	var keys []int
-	for key, _ := range ciphers {
-		keys = append(keys, key)
-	}
-	sort.Ints(keys)
-
-	fmt.Println("Available ciphers:")
-	for _, key := range keys {
-		fmt.Println(key, ":", ciphers[key])
-	}
-}
-
-// Reads input from the console.
-// Validates if the input is a corresponding number to a cipher.
-// If yes, the number is returned, else error is thrown.
-func defineCipherChoice(scanner *bufio.Scanner) int {
-	fmt.Println("Choose the cipher you want to use by its corresponding number.")
-	for {
-		scanner.Scan()
-		cipher, err := strconv.Atoi(scanner.Text())
-
-		if err == nil && cipher >= 1 && cipher <= len(ciphers) {
-			return cipher
-		}
-		fmt.Println("Invalid choice. Please try again.")
-	}
-}
 
 // Reads input from the console.
 // Validates if the input is a number.
@@ -89,69 +31,6 @@ func defineNumberCipherKey(scanner *bufio.Scanner) int {
 			return key
 		}
 		fmt.Println("Invalid input. Please try again.")
-	}
-}
-
-// Reads input from the console.
-// Validates if the input is a number corresponding to a operarion.
-// If yes, the operationEnum is returned, else error is thrown.
-func validateOperationChoice(scanner *bufio.Scanner) OperationEnum {
-	fmt.Println("Press 1 for encryption and 2 for decryption.")
-	for {
-		scanner.Scan()
-		option, err := strconv.Atoi(scanner.Text())
-
-		if err == nil && (option == 1 || option == 2) {
-			switch option {
-			case 1:
-				return Encrypt
-			case 2:
-				return Decrypt
-			}
-		}
-		fmt.Println("Invalid choice. Please try again.")
-	}
-}
-
-// Stores statistics about which cipher is the most used.
-var statistics = map[string]int{
-	"Ceaser":         0,
-	"Route":          0,
-	"Transposition":  0,
-	"Monoalphabetic": 0,
-	"One-time pad":   0}
-
-// Depending on the cipher used, 
-// the cipher encryption of input plain text is called.
-// The result is the cipher text.
-func callCipherEncryption(cipherKey int, scanner *bufio.Scanner) string {
-	fmt.Println("Enter plain text to encypt:")
-	scanner.Scan()
-	plaintext := scanner.Text()
-
-	switch cipherKey {
-	case 1:
-		key := defineNumberCipherKey(scanner)
-		statistics["Ceaser"] += 1
-		return ceaser.Encrypt(plaintext, key)
-	case 2:
-		key := defineNumberCipherKey(scanner)
-		statistics["Route"] += 1
-		return route.Encrypt(plaintext, key)
-	case 3:
-		key := defineNumberCipherKey(scanner)
-		statistics["Transposition"] += 1
-		return transposition.Encrypt(plaintext, key)
-	case 4:
-		key := defineTextCipherKey(scanner)
-		statistics["Monoalphabetic"] += 1
-		return monoalphabetic.Encrypt(plaintext, key)
-	case 5:
-		key := defineTextCipherKey(scanner)
-		statistics["One-time pad"] += 1
-		return onetimepad.Encrypt(plaintext, key)
-	default:
-		return "InvalidCipherKey!"
 	}
 }
 
@@ -171,7 +50,6 @@ func defineTextCipherKey(scanner *bufio.Scanner) string {
 				break
 			}
 		}
-
 		if isValid == true {
 			return text
 		}
@@ -179,61 +57,98 @@ func defineTextCipherKey(scanner *bufio.Scanner) string {
 	}
 }
 
-// Depending on the cipher used, 
+// Depending on the cipher used,
+// the cipher encryption of input plain text is called.
+// The result is the cipher text.
+func callCipherEncryption(cipher encrypting.Cipher, scanner *bufio.Scanner) string {
+	fmt.Println("Enter plain text to encypt:")
+	scanner.Scan()
+	plaintext := scanner.Text()
+
+	if cipher.Name() == "Monoalphabetic" || cipher.Name() == "OneTimePad" {
+		key := defineTextCipherKey(scanner)
+		cipher.IncreaseTimesUsed()
+		return cipher.Encrypt(plaintext, key)
+	}
+
+	key := defineNumberCipherKey(scanner)
+	cipher.IncreaseTimesUsed()
+	return cipher.Encrypt(plaintext, strconv.Itoa(key))
+}
+
+// Depending on the cipher used,
 // the cipher decryption of input cipher text is called.
 // The result is the plain text.
-func callCipherDecryption(cipherKey int, scanner *bufio.Scanner) string {
+func callCipherDecryption(cipher encrypting.Cipher, scanner *bufio.Scanner) string {
 	fmt.Println("Enter cipher text to decrypt:")
 	scanner.Scan()
 	ciphertext := scanner.Text()
 
-	switch cipherKey {
-	case 1:
-		key := defineNumberCipherKey(scanner)
-		statistics["Ceaser"] += 1
-		return ceaser.Decrypt(ciphertext, key)
-	case 2:
-		key := defineNumberCipherKey(scanner)
-		statistics["Route"] += 1
-		return route.Decrypt(ciphertext, key)
-	case 3:
-		key := defineNumberCipherKey(scanner)
-		statistics["Transposition"] += 1
-		return transposition.Decrypt(ciphertext, key)
-	case 4:
+	if cipher.Name() == "Monoalphabetic" || cipher.Name() == "OneTimePad" {
 		key := defineTextCipherKey(scanner)
-		statistics["Monoalphabetic"] += 1
-		return monoalphabetic.Decrypt(ciphertext, key)
-	case 5:
-		key := defineTextCipherKey(scanner)
-		statistics["One-time pad"] += 1
-		return onetimepad.Decrypt(ciphertext, key)
-	default:
-		return "InvalidCipherKey!"
+		cipher.IncreaseTimesUsed()
+		return cipher.Decrypt(ciphertext, key)
 	}
+	key := defineNumberCipherKey(scanner)
+	cipher.IncreaseTimesUsed()
+	return cipher.Decrypt(ciphertext, strconv.Itoa(key))
 }
 
 func main() {
+	ceaserCipher := &ceaser.Ceaser{0}
+	monoalphabeticCipher := &monoalphabetic.MonoAlphabetic{0}
+	oneTimePadCipher := &onetimepad.OneTimePad{0}
+	routeCipher := &route.Route{0}
+	transpositionCipher := &transposition.Transposition{0}
+
+	var ciphersMap = map[int]encrypting.Cipher{
+		1: ceaserCipher,
+		2: monoalphabeticCipher,
+		3: oneTimePadCipher,
+		4: routeCipher,
+		5: transpositionCipher}
+
+	scanner := bufio.NewScanner(os.Stdin)
+	var cipher encrypting.Cipher
+	var err error
 
 	for {
-		printAvailableCiphers()
+		encrypting.PrintAvailableCiphers(ciphersMap)
 
-		scanner := bufio.NewScanner(os.Stdin)
+		fmt.Println("Choose the cipher you want to use by its corresponding number.")
 
-		cipher := defineCipherChoice(scanner)
+		for {
+			scanner.Scan()
 
-		fmt.Println("\nCipher chosen:", ciphers[cipher])
+			cipher, err = encrypting.DefineCipherChoice(ciphersMap, scanner.Text())
+			if err == nil {
+				fmt.Println("\nCipher chosen:", cipher.Name())
+				break
+			}
+			fmt.Println("Invalid choice. Please try again.")
+		}
 
-		operation := validateOperationChoice(scanner)
+		fmt.Println("Press 1 for encryption and 2 for decryption.")
 
-		fmt.Println("\nOperation chosen:", operation)
+		var operation encrypting.OperationEnum
+		for {
+			scanner.Scan()
+
+			operation, err = encrypting.DefineOperationChoice(scanner.Text())
+
+			if err == nil {
+				fmt.Println("\nOperation chosen:", operation)
+				break
+			}
+			fmt.Println("Invalid choice. Please try again.")
+		}
 
 		var result string
 		switch operation {
-		case Encrypt:
+		case encrypting.Encrypt:
 			result = callCipherEncryption(cipher, scanner)
 			break
-		case Decrypt:
+		case encrypting.Decrypt:
 			result = callCipherDecryption(cipher, scanner)
 			break
 		}
@@ -243,7 +158,7 @@ func main() {
 		scanner.Scan()
 		continueChoice := scanner.Text()
 		if continueChoice != "Y" && continueChoice != "y" {
-			fmt.Println("Statistics:", statistics)
+			fmt.Println("Statistics:", ciphersMap)
 			os.Exit(3)
 		}
 	}
